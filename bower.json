@@ -1,6 +1,6 @@
 {
   "name": "slice",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Responsive slicer",
   "main": "slicer.scss",
   "homepage": "https://github.com/summer-of-dev/slice",
@@ -10,7 +10,6 @@
   "license": "MIT",
   "ignore": [
       "**/*.md",
-      "test",
       "Gruntfile.js",
       "package.json"
   ]
