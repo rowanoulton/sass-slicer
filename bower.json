@@ -1,0 +1,20 @@
+{
+  "name": "slice",
+  "version": "0.1.0",
+  "description": "Responsive slicer",
+  "main": "slicer.scss",
+  "homepage": "https://github.com/summer-of-dev/slice",
+  "authors": [
+    "Te Riu Adams-Smith-Warren <te@summerofdev.co.nz>"
+  ],
+  "license": "MIT",
+  "ignore": [
+      "**/*.md",
+      "test",
+      "Gruntfile.js",
+      "package.json"
+  ],
+  "dependencies": {
+        "breakpoint": ">=4.6.4"
+  }
+}
