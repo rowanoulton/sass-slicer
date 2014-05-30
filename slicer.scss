@@ -1,3 +1,11 @@
+@import "breakpoint/breakpoint";
+
+
+// The defaults
+$slicer-breakpoints: 0 400px 600px 800px 1010px !default;
+$slicer-anti-overlap-corrections: 1px !default;
+
+
 // Returns a correction value for the given breakpoint
 // to prevent media query overlapping.
 //
@@ -35,6 +43,8 @@
 //
 // Returns the left breakpoint of an Nth slice, e. g. `600px`.
 @function left-bp-of-slice($slice) {
+	//@warn "left-bp-of-slice called: #{$slice}.";
+
 	$min: 1;
 	$max: total-slices();
 	// Making sure that the slice provided is valid
@@ -57,7 +67,7 @@
 	}
 }
 
-// left-bp-of-slice($slice)
+// right-bp-of-slice($slice)
 // - $slice : <slice number> A number of a slice. Should be positive integer.
 //
 // Returns the right breakpoint of an Nth slice, e. g. `800px`.
@@ -93,8 +103,6 @@
 
 
 
-
-
 ////////////////////////////////////////////////
 // If you don't understand what's going on here,
 // please read the README first.
@@ -109,6 +117,7 @@
 // - $slice-right : <slice number> A number of the left slice. Should be a positive integer.
 // - $no-query    : [<.class>]     A class to provide the no-query fallback (see Breakpoint docs).
 @mixin between($slice-left, $slice-right, $no-query: false) {
+	//@warn "@mixin between(#{$slice-left}, #{$slice-right}, #{$no-query}) called";
 	// If the slices provided are the first and the last one,
 	// the breakpoint becomes meaningless
 	@if $slice-left == 1 and $slice-right == total-slices() {
@@ -119,10 +128,12 @@
 		//@warn "@mixin between(#{$slice-left}, #{$slice-right}, #{$no-query}) called";
 		// Retrieving the left edge of the left slice
 		$context: left-bp-of-slice($slice-left);
+
 		// Retrieving the right edge of the slice
 		// unless the slice is the last one
 		@if $slice-right < total-slices() {
 			$right: right-bp-of-slice($slice-right);
+			//@warn "HHH" + append($context, $right);
 			$context: append($context, $right);
 		}
 		// Setting the breakpoint
@@ -169,11 +180,3 @@
 		@content;
 	}
 }
-
-
-
-
-
-// The defaults
-$slicer-breakpoints: 0 400px 600px 800px 1010px !default;
-$slicer-anti-overlap-corrections: 1px !default;
