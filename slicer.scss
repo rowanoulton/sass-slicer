@@ -1,9 +1,10 @@
-@import "breakpoint/breakpoint";
+// Slicer | Summer of Dev | MIT License
+// Based on Breakpoint Slicer
 
+@import "breakpoint/breakpoint"; // REPLACE
 
-// The defaults
-$slicer-breakpoints: 0 400px 600px 800px 1010px !default;
-$slicer-anti-overlap-corrections: 1px !default;
+@import "lib/settings";
+@import "lib/helpers";
 
 
 // Returns a correction value for the given breakpoint
@@ -28,15 +29,7 @@ $slicer-anti-overlap-corrections: 1px !default;
 	@return 0;
 }
 
-// total-slices()
-//
-// Accepts no arguments.
-//
-// Returns total number of slices
-// (which is equal to total number of breakpoints).
-@function total-slices() {
-	@return length($slicer-breakpoints);
-}
+
 
 // left-bp-of-slice($slice)
 // - $slice : <slice number> A number of a slice. Should be positive integer.
