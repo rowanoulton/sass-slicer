@@ -19,8 +19,7 @@ $breakpoint-no-query-fallbacks: false !default;
 // Deftault Base Font Size
 $breakpoint-base-font-size:     16px !default;
 
-// Legacy Syntax Support
-$breakpoint-legacy-syntax:      false !default;
+
 
 //////////////////////////////
 // Imports
@@ -37,94 +36,86 @@ $breakpoint-legacy-syntax:      false !default;
 //////////////////////////////
 
 @mixin breakpoint($query, $no-query: false) {
-  // Internal Variables
-  $query-string: '';
+	// Internal Variables
+	$query-string: '';
 
-  // Reset contexts
-  @include private-breakpoint-reset-contexts();
+	// Reset contexts
+	@include private-breakpoint-reset-contexts();
 
-  // Test to see if it's a comma-separated list
-  $or-list: if(list-separator($query) == 'comma', true, false);
-  $query-fallback: false;
+	// Test to see if it's a comma-separated list
+	$or-list: if(list-separator($query) == 'comma', true, false);
+	$query-fallback: false;
 
 
-  @if ($or-list == false and $breakpoint-legacy-syntax == false) {
-    $query-string: breakpoint-parse($query);
-  }
-  @else {
-    $length: length($query);
+	@if ($or-list == false) {
+		$query-string: breakpoint-parse($query);
+	}
+	@else {
+		$length: length($query);
 
-    $last: nth($query, $length);
-    $query-fallback: breakpoint-no-query($last);
+		$last: nth($query, $length);
+		$query-fallback: breakpoint-no-query($last);
 
-    @if ($query-fallback != false) {
-      $length: $length - 1;
-    }
+		@if ($query-fallback != false) {
+			$length: $length - 1;
+		}
 
-    @if ($breakpoint-legacy-syntax == true) {
-      $mq: ();
+		
 
-      @for $i from 1 through $length {
-        $mq: append($mq, nth($query, $i), comma);
-      }
+		$query-string: '';
+		@for $i from 1 through $length {
+			$query-string: $query-string + if($i == 1, '', ', ') + breakpoint-parse(nth($query, $i));
+		}
 
-      $query-string: breakpoint-parse($mq);
-    }
-    @else {
-      $query-string: '';
-      @for $i from 1 through $length {
-        $query-string: $query-string + if($i == 1, '', ', ') + breakpoint-parse(nth($query, $i));
-      }
-    }
-  }
+	}
 
-  // Allow for an as-needed override or usage of no query fallback.
-  @if $no-query != false {
-    $query-fallback: $no-query;
-  }
+	// Allow for an as-needed override or usage of no query fallback.
+	@if $no-query != false {
+		$query-fallback: $no-query;
+	}
 
-  // Print Out Query String
-  @if not $breakpoint-no-queries {
-    @media #{$query-string} {
-      @content;
-    }
-  }
+	// Print Out Query String
+	@if not $breakpoint-no-queries {
+		@media #{$query-string} {
+			@content;
+		}
+	}
 
-  @if $breakpoint-no-query-fallbacks != false or $breakpoint-no-queries == true {
+	@if $breakpoint-no-query-fallbacks != false or $breakpoint-no-queries == true {
 
-    $type: type-of($breakpoint-no-query-fallbacks);
-    $print: false;
+		$type: type-of($breakpoint-no-query-fallbacks);
+		$print: false;
 
-    @if ($type == 'bool') {
-      $print: true;
-    }
-    @else if ($type == 'string') {
-      @if $query-fallback == $breakpoint-no-query-fallbacks {
-        $print: true;
-      }
-    }
-    @else if ($type == 'list') {
-      @each $wrapper in $breakpoint-no-query-fallbacks {
-        @if $query-fallback == $wrapper {
-          $print: true;
-        }
-      }
-    }
+		@if ($type == 'bool') {
+			$print: true;
+		}
+		@else if ($type == 'string') {
+			@if $query-fallback == $breakpoint-no-query-fallbacks {
+				$print: true;
+			}
+		}
+		@else if ($type == 'list') {
+			@each $wrapper in $breakpoint-no-query-fallbacks {
+				@if $query-fallback == $wrapper {
+					$print: true;
+				}
+			}
+		}
 
-    // Write Fallback
-    @if ($query-fallback != false) and ($print == true) {
-      $type-fallback: type-of($query-fallback);
+		// Write Fallback
+		@if ($query-fallback != false) and ($print == true) {
+			$type-fallback: type-of($query-fallback);
 
-      @if ($type-fallback != 'bool') {
-        #{$query-fallback} & {
-          @content;
-        }
-      }
-      @else {
-        @content;
-      }
-    }
-  }
+			@if ($type-fallback != 'bool') {
+				#{$query-fallback} & {
+					@content;
+				}
+			}
+			@else {
+				@content;
+			}
+		}
+	}
 
-  @include private-breakpoint-reset-contexts();
+	@include private-breakpoint-reset-contexts();
 }

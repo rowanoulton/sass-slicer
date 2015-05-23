@@ -1,6 +1,0 @@
-// Slicer | Summer of Dev | MIT License
-
-// Return number of slices (equal to total number of breakpoints)
-@function total-slices() {
-	@return length($slicer-breakpoints);
-}

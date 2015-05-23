@@ -1,0 +1,35 @@
+@import "../slicer";
+
+
+body {
+    // Returns an 'error' - slice number too small
+    /*@include to(0) {
+        background: red;
+    }*/
+
+    // Returns an 'error' - slice number too large
+    /*@include to(6) {
+        background: green;
+    }*/
+
+    // Returns an 'error' - doesn't need to be a breakpoint
+    /*@include between(1,5) {
+        background: green;
+    }*/
+
+    @include to(1) {
+        background: red;
+    }
+
+    @include at(3) {
+        background: red;
+    }
+
+     @include between(3,5) {
+        background: green;
+    }
+
+    @include from(2) {
+        background: red;
+    }
+}
