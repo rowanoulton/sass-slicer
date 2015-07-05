@@ -1,22 +1,39 @@
-/*
-    Slicer: Creates a beautiful syntax for media queries
-    Created by Te Riu Warren (@tedawebguy) for the team at Summer of Dev (@summerofdev)
-    - Dependencies: Sass >= 3.4
-    - Version: 1.1.0
-    - License: MIT License
-
-    Current limitations:
-    - only horizontal breakpoints supported
- */
-
-
+//**
+//    Slicer: Creates a beautiful syntax for media queries
+//    Created by Te Riu Warren (@tedawebguy) for the team at Summer of Dev (@summerofdev)
+//    - Dependencies: Sass >= 3.4
+//    - Version: 1.1.0
+//    - License: MIT License
+//
+//    Current limitations:
+//    - only horizontal breakpoints supported
+//**
 
 
-/*
-    Variables
- */
+
+//
+//  Variables
+//
+
+// $small-screen-up: 601px !default;
+// $medium-screen-up: 993px !default;
+// $large-screen-up: 1201px !default;
+// $small-screen: 600px !default;
+// $medium-screen: 992px !default;
+// $large-screen: 1200px !default;
+
+// $medium-and-up: "only screen and (min-width : #{$small-screen-up})" !default;
+// $large-and-up: "only screen and (min-width : #{$medium-screen-up})" !default;
+// $small-and-down: "only screen and (max-width : #{$small-screen})" !default;
+// $medium-and-down: "only screen and (max-width : #{$medium-screen})" !default;
+// $medium-only: "only screen and (min-width : #{$small-screen-up}) and (max-width : #{$medium-screen})" !default;
+
 $slicer-horizontal-breakpoints: 0   400px   600px   800px   1000px  1200px !default;
 // Slice numbers -------------  |  1  |   2   |   3   |   4   |   5   | -----------
+
+$slicer-vertical-breakpoints: 0   300px   600px   900px !default;
+// Slice numbers -------------  |  1  |   2   |   3   | -----------
+
 $slicer-anti-overlap-correction: 1px !default;
 
 
@@ -30,26 +47,26 @@ $slicer-anti-overlap-correction: 1px !default;
 
 
 
-/*
-    Helpers
- */
+//
+//  Helpers
+//
 
 
-/*
-    Returns total number of slices/breakpoints
-    - no arguments
- */
+//
+//  Returns total number of slices/breakpoints
+//  - no arguments
+//
 @function total-slices() {
     @return length($slicer-horizontal-breakpoints);
 }
 
 
-/*
-    Returns correction value to prevent media query overlap (0, -, +)
-    - dependent on global variable '$slicer-anti-overlap-correction'
-    - argument $breakpoint: a breakpoint, e. g. 800px or 20em
-    - argument $positive: * true - return only positive correction value (default), * false - return only negative correction value
- */
+//
+//  Returns correction value to prevent media query overlap (0, -, +)
+//  - dependent on global variable '$slicer-anti-overlap-correction'
+//  - argument $breakpoint: a breakpoint, e. g. 800px or 20em
+//  - argument $positive: * true - return only positive correction value (default), * false - return only negative correction value
+//
 @function anti-overlap-correction($breakpoint, $positive: true) {
     @if unit($breakpoint) == unit($slicer-anti-overlap-correction) and ($slicer-anti-overlap-correction > 0) == $positive {
         @return $slicer-anti-overlap-correction;

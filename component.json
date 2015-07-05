@@ -1,0 +1,11 @@
+{
+  "name": "slice",
+  "repo": "summer-of-dev/slice",
+  "version": "1.1.0",
+  "author": {
+    "name": "Summer of Dev",
+    "email": "te@summerofdev.com",
+    "url": "https://github.com/summer-of-dev/slice"
+  },
+  "license": "MIT"
+}
