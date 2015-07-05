@@ -1,13 +1,13 @@
 {
-  "name": "slice",
+  "name": "slicer",
   "version": "1.1.0",
   "description": "Responsive slicer",
-  "repository": "summer-of-dev/slice",
+  "repository": "summer-of-dev/slicer",
   "main": "slicer.scss",
   "author": {
     "name": "Summer of Dev",
     "email": "te@summerofdev.com",
-    "url": "https://github.com/summer-of-dev/slice"
+    "url": "https://github.com/summer-of-dev/slicer"
   },
   "license": "MIT",
   "devDependencies": {
