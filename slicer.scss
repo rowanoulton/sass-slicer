@@ -1,34 +1,17 @@
-//**
 //    Slicer: Sass Responsive 'slicer', a tool set for breakpoints
 //    Created by Te Riu Warren (@tedawebguy) for the team at Summer of Dev (@summerofdev)
 //    - Dependencies: Sass >= 3.4
-//    - Version: 1.1.0
+//    - Version: 2.0.0
 //    - License: MIT License
 //
 //    Current limitations:
-//    - only horizontal breakpoints supported
-//    - no 'touch' support
 //    - no 'PPI' support
-//**
 
 
+@import "src/variable";
+@import "src/helper";
 
-//
-//  Variables
-//
 
-// $small-screen-up: 601px !default;
-// $medium-screen-up: 993px !default;
-// $large-screen-up: 1201px !default;
-// $small-screen: 600px !default;
-// $medium-screen: 992px !default;
-// $large-screen: 1200px !default;
-
-// $medium-and-up: "only screen and (min-width : #{$small-screen-up})" !default;
-// $large-and-up: "only screen and (min-width : #{$medium-screen-up})" !default;
-// $small-and-down: "only screen and (max-width : #{$small-screen})" !default;
-// $medium-and-down: "only screen and (max-width : #{$medium-screen})" !default;
-// $medium-only: "only screen and (min-width : #{$small-screen-up}) and (max-width : #{$medium-screen})" !default;
 
 $slicer-horizontal-breakpoints: 0   400px   600px   800px   1000px  1200px !default;
 // Slice numbers -------------  |  1  |   2   |   3   |   4   |   5   | -----------
@@ -41,10 +24,190 @@ $slicer-anti-overlap-correction: 1px !default;
 
 
 
+// Newest
+// @param $point-map = (from: value, to: value, at: value)
+@mixin bp($point-map, $direction: 'horizontal') {
+    $query: '';
+    $count: 0;
+
+    @if $direction == 'horizontal' {
+        $points: $breakpoint-horizontal;
+        $type: 'width';
+    }
+    @else {
+        $points: $breakpoint-vertical;
+        $type: 'height';
+    }
+
+    @each $key, $value in $point-map {
+        @if map-has-key($points, $value) {
+
+            $parsed-value: map-get($points, $value);
+            $parsed-value: em($parsed-value);
+
+            @if $count == 0 and $key == 'from' {
+                $parsed-value: strip-unit($parsed-value) + strip-unit(em(1px));
+                $parsed-value: $parsed-value * 1em;
+            }
+
+            @if $count > 0 {
+                $query: $query + ' and ';
+            }
+
+            @if $key == 'from' {
+                $query: $query + '(min-#{$type}: ' + $parsed-value + ')';
+            }
+
+            @elseif $key == 'to' {
+                $query: $query + '(max-#{$type}: ' + $parsed-value + ')';
+            }
+
+            $count: $count + 1;
+
+        }
+        @else {
+            @error "You're living way too dangerously! One of the 'points' doesn't exist in the breakpoint map";
+        }
+    }
+
+    @media #{$query} {
+        @content;
+    }
+
+    //@warn "Count #{$count}";
+}
+
+// @error "Da fuck you doing? You're setting the 'from' value twice!";
+// @error "You're living way too dangerously! ERROR";
+// @error "Go straight to Jail. Do not pass Go. You fucked up. ERROR";
+
+
+
+
+// NEW
+// Helpers
+@function total-slices-new($direction) {
+    @if $direction == 'horizontal' {
+        $points: $breakpoint-horizontal;
+    }
+    @else {
+        $points: $breakpoint-vertical;
+    }
+
+    @return length($points);
+}
+
+// left-bp-of-slice($slice)
+// @param $slice : <slice number> A number of a slice. Should be positive integer.
+// @return Returns the left breakpoint of an Nth slice, e. g. `600px`.
+@function left-bp-of-slice-new($slice) {
+    $min: 1;
+    $max: total-slices();
+    // Making sure that the slice provided is valid
+    @if $slice < $min or $slice > $max {
+        @warn "Wrong Slice number provided: #{$slice}. Should be between #{$min} and #{$max}.";
+    }
+    @else {
+        $left: i am declared;
+        // Special treatment of the first slice to prevent a meaningless `min-width: 0` media query
+        @if $slice == 1 {
+            $left: max-width;
+        }
+        @else {
+            // Returning the left edge of the slice
+            $left: nth($slicer-horizontal-breakpoints, $slice);
+            $left: $left + anti-overlap-correction($left, true);
+        }
+        @return $left;
+    }
+}
+
+
+@mixin between-new($slice-left, $slice-right, $direction: 'horizontal') {
+
+    // Check if slice is within bounds
+    @if $slice-right > total-slices-new($direction) or $slice-left > total-slices-new($direction) {
+        @error "Slice '#{$slice-right}' (right) or '#{$slice-left}' (left) is larger than number of slices defined";
+    }
+    @elseif $slice-left < 1 or $slice-right < 1 {
+        @error "Slice '#{$slice-right}' (right) or '#{$slice-left}' (left) is less than one ";
+    }
+
+
+    // If the slices provided are the first and the last one, it shouldn't be a breakpoint
+    @if $slice-left == 1 and $slice-right == total-slices-new($direction) {
+        @error "Slice's are the minimum and maximum, so this statement shouldn't be wrapped in a media query";
+    }
+
+
+    // Retrieving the left edge of the left slice
+    $context: left-bp-of-slice-new($slice-left);
+
+    // Retrieving the right edge of the slice, unless the slice is the last one
+    @if $slice-right < total-slices-new($direction) {
+        $right: right-bp-of-slice($slice-right);
+        $context: append($context, $right);
+    }
+
+    // Breakpoint
+    @include breakpoint($context) { // Add direction
+        @content;
+    }
+}
+
+
+
+
+
+
 
 
 // The dependency
 @import "breakpoint/breakpoint";
+
+@mixin breakpoint($query, $no-query: false) {
+    // Internal Variables
+    $query-string: '';
+
+    // Reset contexts
+    @include private-breakpoint-reset-contexts();
+
+    // Test to see if it's a comma-separated list
+    $or-list: if(list-separator($query) == 'comma', true, false);
+    $query-fallback: false;
+
+
+    @if ($or-list == false) {
+        $query-string: breakpoint-parse($query);
+    }
+    @else {
+        $length: length($query);
+
+        $last: nth($query, $length);
+        $query-fallback: breakpoint-no-query($last);
+
+        @if ($query-fallback != false) {
+            $length: $length - 1;
+        }
+
+
+
+        $query-string: '';
+        @for $i from 1 through $length {
+            $query-string: $query-string + if($i == 1, '', ', ') + breakpoint-parse(nth($query, $i));
+        }
+
+    }
+
+    // Print Out Query String
+    @if not $breakpoint-no-queries {
+        @media #{$query-string} {
+            @content;
+        }
+    }
+
+    @include private-breakpoint-reset-contexts();
+}
 
 
 
@@ -178,7 +341,8 @@ $slicer-anti-overlap-correction: 1px !default;
         $context: append($context, $right);
     }
     // Setting the breakpoint
-    //@warn "Context: #{$context}";
+    // @warn "Context: #{$context}";
+    // @warn "No query: #{$no-query}";
     @include breakpoint($context, $no-query) {
         @content;
     }

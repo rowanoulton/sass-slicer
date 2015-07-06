@@ -1,5 +1,7 @@
 @import "../slicer";
 
+$small-to-medium: (from: 'small', to: 'medium');
+
 
 body {
     // Returns an 'error' - slice number too small
@@ -25,11 +27,21 @@ body {
         background: red;
     }
 
-     @include between(3,5) {
+    @include between(3,5) {
+        background: green;
+    }
+
+    @include bp($small-to-medium) {
         background: green;
     }
 
     @include from(2) {
+        background: red;
+    }
+}
+
+html {
+    @include to(1) {
         background: red;
     }
 }

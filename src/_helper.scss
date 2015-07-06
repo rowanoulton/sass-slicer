@@ -1,0 +1,24 @@
+// Slicer: Helper functions
+
+
+// Convert PX units for EM units
+// @param $value Value to convert i.e. 32px
+// @param $context Base em unit i.e. 16px (browser default)
+// @return em EM value i.e. 2em
+@function em($value, $context: $breakpoint-em-base-context) {
+    @if $value == 0 {
+        @return 0;
+    }
+    @return $value / $context + 0em;
+}
+
+
+// Strip unit from a number
+// @param $number Value to remove unit from i.e. 20px
+// @return number Stripped number i.e. 20
+@function strip-unit($number) {
+    @if type-of($number) == 'number' and not unitless($number) {
+        @return $number / ($number * 0 + 1);
+    }
+    @return $number;
+}

@@ -1,0 +1,19 @@
+// Slicer: Variables
+
+$breakpoint-em-base-context: 16px !default;
+
+$breakpoint-horizontal: (
+    base: 0,
+    tiny: 400px,
+    small: 600px,
+    medium: 800px,
+    normal: 1000px,
+    large: 1200px
+) !default;
+
+$breakpoint-vertical: (
+    base: 0,
+    small: 300px,
+    normal: 600px,
+    large: 900px
+) !default;
