@@ -29,7 +29,7 @@ $breakpoint-base-font-size:     16px !default;
 @import 'parsers';
 @import 'no-query';
 
-@import 'respond-to';
+// @import 'respond-to';
 
 //////////////////////////////
 // Breakpoint Mixin
@@ -60,7 +60,7 @@ $breakpoint-base-font-size:     16px !default;
 			$length: $length - 1;
 		}
 
-		
+
 
 		$query-string: '';
 		@for $i from 1 through $length {

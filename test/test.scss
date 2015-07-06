@@ -38,6 +38,12 @@ body {
     @include from(2) {
         background: red;
     }
+
+
+    // Print
+    @include print {
+        content: 'Viewing this in print mode!';
+    }
 }
 
 html {

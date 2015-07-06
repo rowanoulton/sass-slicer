@@ -12,7 +12,7 @@
 @import "src/helper";
 
 
-
+// OLD
 $slicer-horizontal-breakpoints: 0   400px   600px   800px   1000px  1200px !default;
 // Slice numbers -------------  |  1  |   2   |   3   |   4   |   5   | -----------
 
@@ -20,7 +20,15 @@ $slicer-vertical-breakpoints: 0   300px   600px   900px !default;
 // Slice numbers -------------  |  1  |   2   |   3   | -----------
 
 $slicer-anti-overlap-correction: 1px !default;
+// END_OLD
 
+
+// Print media query
+@mixin print {
+    @media print {
+        @content;
+    }
+}
 
 
 
@@ -96,6 +104,9 @@ $slicer-anti-overlap-correction: 1px !default;
 
     @return length($points);
 }
+
+
+
 
 // left-bp-of-slice($slice)
 // @param $slice : <slice number> A number of a slice. Should be positive integer.
