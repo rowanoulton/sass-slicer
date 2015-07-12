@@ -6,10 +6,14 @@
 // @param $context Base em unit i.e. 16px (browser default)
 // @return em EM value i.e. 2em
 @function em($value, $context: $breakpoint-em-base-context) {
-    @if $value == 0 {
-        @return 0;
+    @if $breakpoint-em-convert {
+        @if $value == 0 {
+            @return 0;
+        }
+        @return $value / $context + 0em;
     }
-    @return $value / $context + 0em;
+
+    @return $value;
 }
 
 
@@ -21,4 +25,23 @@
         @return $number / ($number * 0 + 1);
     }
     @return $number;
+}
+
+
+// Retrieve next map value
+// @param $map Map of key/values to search
+// @param $current-key Key of current item
+// @return mixed Value of next item
+@function map-get-next($map, $current-key) {
+    $current: false;
+
+    @each $key, $value in $map {
+        @if $current {
+            @return $value;
+        }
+
+        @if $key == $current-key {
+            $current: true;
+        }
+    }
 }

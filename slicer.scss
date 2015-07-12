@@ -6,37 +6,36 @@
 //
 //    Current limitations:
 //    - no 'PPI' support
+//    - no 'orientation' support
+//
+//    Error ideas:
+//    - @error "Da fuck you doing? You're setting the 'from' value twice!";
+//    - @error "You're living way too dangerously! ERROR";
+//    - @error "Go straight to Jail. Do not pass Go. You fucked up. ERROR";
 
 
+//
+// DEPENDENCIES
+//
 @import "src/variable";
 @import "src/helper";
 
 
-// OLD
-$slicer-horizontal-breakpoints: 0   400px   600px   800px   1000px  1200px !default;
-// Slice numbers -------------  |  1  |   2   |   3   |   4   |   5   | -----------
-
-$slicer-vertical-breakpoints: 0   300px   600px   900px !default;
-// Slice numbers -------------  |  1  |   2   |   3   | -----------
-
-$slicer-anti-overlap-correction: 1px !default;
-// END_OLD
+//
+// PARSER
+//
 
 
-// Print media query
-@mixin print {
-    @media print {
-        @content;
-    }
-}
-
-
-
-// Newest
-// @param $point-map = (from: value, to: value, at: value)
-@mixin bp($point-map, $direction: 'horizontal') {
+// Create media query
+// @param $point-map = (from: value, to: value, at: value) Map of key/values to use in media query
+// @param $direction Direction of breakpoints
+// @param $media Media value to use
+// @return string Media Query, wrapping @content
+@mixin bp($point-map, $direction: 'horizontal', $media: $breakpoint-media-default) {
     $query: '';
     $count: 0;
+    $media: (media: $media);
+    $point-map: map-merge($media, $point-map);
 
     @if $direction == 'horizontal' {
         $points: $breakpoint-horizontal;
@@ -48,14 +47,32 @@ $slicer-anti-overlap-correction: 1px !default;
     }
 
     @each $key, $value in $point-map {
-        @if map-has-key($points, $value) {
+        @if map-has-key($points, $value) or $key == 'media' {
 
-            $parsed-value: map-get($points, $value);
-            $parsed-value: em($parsed-value);
+            // Set overlap unit
+            @if $breakpoint-em-convert {
+                $overlap: 1em;
+            }
+            @else {
+                $overlap: 1px;
+            }
 
-            @if $count == 0 and $key == 'from' {
+            // Only pass 'values'
+            @if $key != 'media' {
+
+                // Current value
+                $parsed-value: map-get($points, $value);
+                $parsed-value: em($parsed-value);
+
+                // Next value
+                $parsed-value-next: map-get-next($points, $value);
+                $parsed-value-next: em($parsed-value-next);
+            }
+
+
+            @if $count == 1 and $key == 'from' or $key == 'at' {
                 $parsed-value: strip-unit($parsed-value) + strip-unit(em(1px));
-                $parsed-value: $parsed-value * 1em;
+                $parsed-value: $parsed-value * $overlap;
             }
 
             @if $count > 0 {
@@ -70,6 +87,16 @@ $slicer-anti-overlap-correction: 1px !default;
                 $query: $query + '(max-#{$type}: ' + $parsed-value + ')';
             }
 
+            @elseif $key == 'at' {
+                $query: $query + '(min-#{$type}: ' + $parsed-value + ')';
+                $query: $query + ' and ';
+                $query: $query + '(max-#{$type}: ' + $parsed-value-next + ')';
+            }
+
+            @elseif $key == 'media' {
+                $query: $query + $value;
+            }
+
             $count: $count + 1;
 
         }
@@ -81,318 +108,66 @@ $slicer-anti-overlap-correction: 1px !default;
     @media #{$query} {
         @content;
     }
-
-    //@warn "Count #{$count}";
-}
-
-// @error "Da fuck you doing? You're setting the 'from' value twice!";
-// @error "You're living way too dangerously! ERROR";
-// @error "Go straight to Jail. Do not pass Go. You fucked up. ERROR";
-
-
-
-
-// NEW
-// Helpers
-@function total-slices-new($direction) {
-    @if $direction == 'horizontal' {
-        $points: $breakpoint-horizontal;
-    }
-    @else {
-        $points: $breakpoint-vertical;
-    }
-
-    @return length($points);
 }
 
 
+//
+// SHORTCUTS
+//
 
 
-// left-bp-of-slice($slice)
-// @param $slice : <slice number> A number of a slice. Should be positive integer.
-// @return Returns the left breakpoint of an Nth slice, e. g. `600px`.
-@function left-bp-of-slice-new($slice) {
-    $min: 1;
-    $max: total-slices();
-    // Making sure that the slice provided is valid
-    @if $slice < $min or $slice > $max {
-        @warn "Wrong Slice number provided: #{$slice}. Should be between #{$min} and #{$max}.";
-    }
-    @else {
-        $left: i am declared;
-        // Special treatment of the first slice to prevent a meaningless `min-width: 0` media query
-        @if $slice == 1 {
-            $left: max-width;
-        }
-        @else {
-            // Returning the left edge of the slice
-            $left: nth($slicer-horizontal-breakpoints, $slice);
-            $left: $left + anti-overlap-correction($left, true);
-        }
-        @return $left;
-    }
-}
-
-
-@mixin between-new($slice-left, $slice-right, $direction: 'horizontal') {
-
-    // Check if slice is within bounds
-    @if $slice-right > total-slices-new($direction) or $slice-left > total-slices-new($direction) {
-        @error "Slice '#{$slice-right}' (right) or '#{$slice-left}' (left) is larger than number of slices defined";
-    }
-    @elseif $slice-left < 1 or $slice-right < 1 {
-        @error "Slice '#{$slice-right}' (right) or '#{$slice-left}' (left) is less than one ";
-    }
-
-
-    // If the slices provided are the first and the last one, it shouldn't be a breakpoint
-    @if $slice-left == 1 and $slice-right == total-slices-new($direction) {
-        @error "Slice's are the minimum and maximum, so this statement shouldn't be wrapped in a media query";
-    }
-
-
-    // Retrieving the left edge of the left slice
-    $context: left-bp-of-slice-new($slice-left);
-
-    // Retrieving the right edge of the slice, unless the slice is the last one
-    @if $slice-right < total-slices-new($direction) {
-        $right: right-bp-of-slice($slice-right);
-        $context: append($context, $right);
-    }
-
-    // Breakpoint
-    @include breakpoint($context) { // Add direction
+// Create print media query
+@mixin print {
+    @include bp((), '', 'print') {
         @content;
     }
 }
 
 
-
-
-
-
-
-
-// The dependency
-@import "breakpoint/breakpoint";
-
-@mixin breakpoint($query, $no-query: false) {
-    // Internal Variables
-    $query-string: '';
-
-    // Reset contexts
-    @include private-breakpoint-reset-contexts();
-
-    // Test to see if it's a comma-separated list
-    $or-list: if(list-separator($query) == 'comma', true, false);
-    $query-fallback: false;
-
-
-    @if ($or-list == false) {
-        $query-string: breakpoint-parse($query);
-    }
-    @else {
-        $length: length($query);
-
-        $last: nth($query, $length);
-        $query-fallback: breakpoint-no-query($last);
-
-        @if ($query-fallback != false) {
-            $length: $length - 1;
-        }
-
-
-
-        $query-string: '';
-        @for $i from 1 through $length {
-            $query-string: $query-string + if($i == 1, '', ', ') + breakpoint-parse(nth($query, $i));
-        }
-
-    }
-
-    // Print Out Query String
-    @if not $breakpoint-no-queries {
-        @media #{$query-string} {
-            @content;
-        }
-    }
-
-    @include private-breakpoint-reset-contexts();
-}
-
-
-
-
-//
-//  Helpers
-//
-
-
-//
-//  Returns total number of slices/breakpoints
-//  - no arguments
-//
-@function total-slices() {
-    @return length($slicer-horizontal-breakpoints);
-}
-
-
-//
-//  Returns correction value to prevent media query overlap (0, -, +)
-//  - dependent on global variable '$slicer-anti-overlap-correction'
-//  - argument $breakpoint: a breakpoint, e. g. 800px or 20em
-//  - argument $positive: * true - return only positive correction value (default), * false - return only negative correction value
-//
-@function anti-overlap-correction($breakpoint, $positive: true) {
-    @if unit($breakpoint) == unit($slicer-anti-overlap-correction) and ($slicer-anti-overlap-correction > 0) == $positive {
-        @return $slicer-anti-overlap-correction;
-    }
-    @return 0;
-}
-
-
-
-// left-bp-of-slice($slice)
-// - $slice : <slice number> A number of a slice. Should be positive integer.
-//
-// Returns the left breakpoint of an Nth slice, e. g. `600px`.
-@function left-bp-of-slice($slice) {
-    $min: 1;
-    $max: total-slices();
-    // Making sure that the slice provided is valid
-    @if $slice < $min or $slice > $max {
-        @warn "Wrong Slice number provided: #{$slice}. Should be between #{$min} and #{$max}.";
-    }
-    @else {
-        $left: i am declared;
-        // Special treatment of the first slice to prevent a meaningless `min-width: 0` media query
-        @if $slice == 1 {
-            $left: max-width;
-        }
-        @else {
-            // Returning the left edge of the slice
-            $left: nth($slicer-horizontal-breakpoints, $slice);
-            $left: $left + anti-overlap-correction($left, true);
-        }
-        @return $left;
-    }
-}
-
-// right-bp-of-slice($slice)
-// - $slice : <slice number> A number of a slice. Should be positive integer.
-//
-// Returns the right breakpoint of an Nth slice, e. g. `800px`.
-@function right-bp-of-slice($slice) {
-    $min: 1;
-    $max: total-slices() - 1;
-    // Making sure that the slice provided is valid
-    @if $slice == total-slices() {
-        @warn "Slice number provided: #{$slice}. It's the last slice, it has no right edge.";
-    }
-    @else if $slice < $min or $slice > $max {
-        @warn "Wrong column number provided: #{$slice}. Should be between #{$min} and #{$max}.";
-    }
-    @else {
-        // Reading the right edge of the slice
-        $right: nth($slicer-horizontal-breakpoints, $slice + 1);
-        @return $right + anti-overlap-correction($right, false);
-    }
-}
-
-// bp($slice)
-//
-// A shortcut for nth($slicer-horizontal-breakpoints, $slice)
-@function bp($slice) {
-    @return nth($slicer-horizontal-breakpoints, $slice);
-}
-
-
-
-
-
-////////////////////////////////////////////////
-// If you don't understand what's going on here,
-// please read the README first.
-////////////////////////////////////////////////
-
-// Wraps the content block provided with a media query
-// with min-width equal to the left edge of the left slice
-// and max-width equal to the right edge of the right slice
-//
-// between($slice-left, $slice-right, $no-query: false)
-// - $slice-left  : <slice number> A number of the left slice. Should be a positive integer.
-// - $slice-right : <slice number> A number of the left slice. Should be a positive integer.
-// - $no-query    : [<.class>]     A class to provide the no-query fallback (see Breakpoint docs).
-@mixin between($slice-left, $slice-right, $no-query: false) {
-    // Check if slice is within bounds
-    @if $slice-right > total-slices() {
-        @error "Slice '#{$slice-right}' is larger than number of slices defined";
-    }
-    @elseif $slice-left < 1 {
-        @error "Slice '#{$slice-left}' is less than one (left)";
-    }
-    @elseif $slice-right < 1 {
-        @error "Slice '#{$slice-right}' is less than one (right)";
-    }
-
-
-    // If the slices provided are the first and the last one, it shouldn't be a breakpoint
-    @if $slice-left == 1 and $slice-right == total-slices() {
-        @error "Slice's are the minimum and maximum, so this statement shouldn't be wrapped in a media query";
-    }
-
-
-    // @warn "@mixin between(#{$slice-left}, #{$slice-right}, #{$no-query}) called";
-    // Retrieving the left edge of the left slice
-    $context: left-bp-of-slice($slice-left);
-    // Retrieving the right edge of the slice
-    // unless the slice is the last one
-    @if $slice-right < total-slices() {
-        $right: right-bp-of-slice($slice-right);
-        $context: append($context, $right);
-    }
-    // Setting the breakpoint
-    // @warn "Context: #{$context}";
-    // @warn "No query: #{$no-query}";
-    @include breakpoint($context, $no-query) {
-        @content;
-    }
-
-}
-
-// Wraps the content block provided with a media query
-// with min-width and max-width equal to the edges of a slice
-//
-// at($slice, $no-query: false)
-// - $slice : <slice number> A number of a slice. Should be a positive integer.
-// - $no-query    : [<.class>]     A class to provide the no-query fallback (see Breakpoint docs).
-@mixin at($slice, $no-query: false) {
-    @include between($slice, $slice, $no-query) {
+// Create a max-width query, using $point as 'right-side' value
+// @param $point Breakpoint key to use as 'right-side' value
+// @param $direction Direction of breakpoints
+// @param $media Media value to use
+// @return string Media Query, wrapping @content
+@mixin to($point, $direction: 'horizontal', $media: $breakpoint-media-default) {
+    @include bp((to: $point), $direction, $media) {
         @content;
     }
 }
 
-// Wraps the content block provided with a media query
-// with min-width equal to the right edge of a slice
-//
-// from($slice, $no-query: false)
-// - $slice : <slice number> A number of a slice. Should be a positive integer.
-// - $no-query    : [<.class>]     A class to provide the no-query fallback (see Breakpoint docs).
-@mixin from($slice, $no-query: false) {
-    @include between($slice, total-slices(), $no-query) {
+
+// Create a min-width query, using $point as 'left-side' value
+// @param $point Breakpoint key to use as 'left-side' value
+// @param $direction Direction of breakpoints
+// @param $media Media value to use
+// @return string Media Query, wrapping @content
+@mixin from($point, $direction: 'horizontal', $media: $breakpoint-media-default) {
+    @include bp((from: $point), $direction, $media) {
         @content;
     }
 }
 
-// Wraps the content block provided with a media query
-// with max-width equal to the right edge of a slice
-//
-// to($slice, $no-query: false)
-// - $slice : <slice number> A number of a slice. Should be a positive integer.
-// - $no-query    : [<.class>]     A class to provide the no-query fallback (see Breakpoint docs).
-@mixin to($slice, $no-query: false) {
-    //@warn "@mixin to(#{$slice}, #{$no-query}) called";
-    @include between(1, $slice, $no-query) {
+
+// Create a min-width and max-width query, using $point as 'left-side' value and 'right-side' value
+// @param $point Breakpoint key to use as 'left-side' value and 'right-side' value
+// @param $direction Direction of breakpoints
+// @param $media Media value to use
+// @return string Media Query, wrapping @content
+@mixin at($point, $direction: 'horizontal', $media: $breakpoint-media-default) {
+    @include bp((at: $point), $direction, $media) {
+        @content;
+    }
+}
+
+
+// Create a min-width and max-width query, using $point-from as 'left-side' value and $point-to as 'right-side' value
+// @param $point-from Breakpoint key to use as 'left-side' value
+// @param $point-to Breakpoint key to use as 'right-side' value
+// @param $direction Direction of breakpoints
+// @param $media Media value to use
+// @return string Media Query, wrapping @content
+@mixin between($point-from, $point-to, $direction: 'horizontal', $media: $breakpoint-media-default) {
+    @include bp((from: $point-from, to: $point-to), $direction, $media) {
         @content;
     }
 }

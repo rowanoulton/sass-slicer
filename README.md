@@ -15,8 +15,16 @@ Sass Responsive 'slicer', a tool set for breakpoints and media queries
 - Tiny filesize
 
 
+## Install
+
+- [npm](http://npmjs.org/): `npm install slicer --save`
+- [bower](http://bower.io/): `bower install slicer --save`
+
+
 ## Usage
 
+
+**Print media query**
 
 	@include print {
 		content: 'Viewing this in print mode!';
@@ -25,20 +33,24 @@ Sass Responsive 'slicer', a tool set for breakpoints and media queries
 
 
 
-#### Media Types
+### Media Types
 
-Based on the [W3C Media document](http://www.w3.org/TR/CSS2/media.html), there are a total of 10 media types we use:
+Based on the [W3C Media Queries 4 Draft](http://dev.w3.org/csswg/mediaqueries/#media-types), there are a total of 4 media types we use:
 
 - all
-- braille
-- embossed
-- handheld
 - print
-- projection
 - screen
 - speech
-- tty
-- tv
+
+
+### Browser Support
+
+- Google Chrome (obviously)
+- Mozilla Firefox
+- Safari
+- Opera
+- Internet Explorer 9+ (surprisingly)
+
 
 
 ## Changelog
