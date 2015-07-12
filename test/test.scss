@@ -9,6 +9,10 @@ body {
         background: yellow;
     }
 
+    @include to('small', 'vertical') {
+        background: yellow;
+    }
+
     @include at('small') {
         background: red;
     }
