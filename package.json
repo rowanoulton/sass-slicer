@@ -1,6 +1,6 @@
 {
   "name": "slicer",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Sass Responsive 'slicer', a tool set for breakpoints",
   "repository": "summer-of-dev/slicer",
   "main": "slicer.scss",
