@@ -5,7 +5,7 @@
 // @param $value Value to convert i.e. 32px
 // @param $context Base em unit i.e. 16px (browser default)
 // @return em EM value i.e. 2em
-@function em($value, $context: $breakpoint-em-base-context) {
+@function breakpoint-em($value, $context: $breakpoint-em-base-context) {
     @if $breakpoint-em-convert {
         @if $value == 0 {
             @return 0;

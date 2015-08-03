@@ -62,16 +62,16 @@
 
                 // Current value
                 $parsed-value: map-get($points, $value);
-                $parsed-value: em($parsed-value);
+                $parsed-value: breakpoint-em($parsed-value);
 
                 // Next value
                 $parsed-value-next: map-get-next($points, $value);
-                $parsed-value-next: em($parsed-value-next);
+                $parsed-value-next: breakpoint-em($parsed-value-next);
             }
 
 
             @if $count == 1 and $key == 'from' or $key == 'at' {
-                $parsed-value: strip-unit($parsed-value) + strip-unit(em(1px));
+                $parsed-value: strip-unit($parsed-value) + strip-unit(breakpoint-em(1px));
                 $parsed-value: $parsed-value * $overlap;
             }
 

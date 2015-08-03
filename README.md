@@ -57,6 +57,11 @@ Based on the [W3C Media Queries 4 Draft](http://dev.w3.org/csswg/mediaqueries/#m
 
 **Version 2.0.0**
 
+- Fix issue with em() conflicting with Bourbon em() function in certain projects
+
+
+**Version 2.0.0**
+
 - Rewritten from the ground up, with support for Sass Maps
 - Adds support for vertical breakpoints
 - Adds print media query
