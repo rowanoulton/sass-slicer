@@ -1,6 +1,6 @@
 {
   "name": "sass-slicer",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Sass Responsive 'slicer', a tool set for breakpoints",
   "repository": {
     "type": "git",
