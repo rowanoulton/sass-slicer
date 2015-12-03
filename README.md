@@ -54,6 +54,10 @@ Based on the [W3C Media Queries 4 Draft](http://dev.w3.org/csswg/mediaqueries/#m
 
 ## Changelog
 
+**Version 2.1.0**
+
+- Removed Bower config
+
 **Version 2.0.2**
 
 - Fix issue with em() conflicting with Bourbon em() function in certain projects
