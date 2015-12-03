@@ -1,4 +1,4 @@
-Slicer
+Sass Slicer
 =====
 
 Sass Responsive 'slicer', a tool set for breakpoints and media queries
@@ -17,8 +17,7 @@ Sass Responsive 'slicer', a tool set for breakpoints and media queries
 
 ## Install
 
-- [npm](http://npmjs.org/): `npm install slicer --save`
-- [bower](http://bower.io/): `bower install slicer --save`
+- [npm](http://npmjs.org/): `npm install sass-slicer --save`
 
 
 ## Usage
