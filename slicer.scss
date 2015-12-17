@@ -63,8 +63,10 @@
                 $parsed-value: breakpoint-em($parsed-value);
 
                 // Next value
-                $parsed-value-next: map-get-next($points, $value);
-                $parsed-value-next: breakpoint-em($parsed-value-next);
+                @if $key == 'at' {
+                    $parsed-value-next: map-get-next($points, $value);
+                    $parsed-value-next: breakpoint-em($parsed-value-next);
+                }
             }
 
 

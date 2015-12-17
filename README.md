@@ -54,6 +54,10 @@ Based on the [W3C Media Queries 4 Draft](http://dev.w3.org/csswg/mediaqueries/#m
 
 ## Changelog
 
+**Version 2.1.4**
+
+- Fixed at() regression error using the same breakpoint value
+
 **Version 2.1.3**
 
 - Fixed from('last-breakpoint') throwing an error
