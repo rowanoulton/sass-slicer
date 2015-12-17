@@ -54,6 +54,10 @@ Based on the [W3C Media Queries 4 Draft](http://dev.w3.org/csswg/mediaqueries/#m
 
 ## Changelog
 
+**Version 2.1.3**
+
+- Fixed from('last-breakpoint') throwing an error
+
 **Version 2.1.1**
 
 - Removed Bower config

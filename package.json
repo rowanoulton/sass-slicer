@@ -1,13 +1,13 @@
 {
   "name": "sass-slicer",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "Sass Responsive 'slicer', a tool set for breakpoints",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/teriu/sass-slicer.git"
   },
   "main": "slicer.scss",
-  "author": "Te Riu Warren <teriu@teriu.name> (https://github.com/teriu/sass-slicer)",
+  "author": "Te Riu Warren <teriu@teriu.name> (https://github.com/teriu)",
   "license": "MIT",
   "devDependencies": {
     "gulp": "^3.8.11",
