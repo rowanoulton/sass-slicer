@@ -101,7 +101,7 @@
 
         }
         @else {
-            @error "You're living way too dangerously! One of the 'points' doesn't exist in the breakpoint map";
+            @error "You're living way too dangerously! The breakpoint '#{$value}' doesn't exist in the breakpoint map";
         }
     }
 
